@@ -26,22 +26,8 @@ ollama pull llama3.1           # chat model (swap for any model you have)
 
 Ollama needs to be running (check the tray icon / run `ollama --version`).
 
-## 2. Create a Python Virtual Environment
 
-Create a virtual environment within this workspace:
-```bash
-python -m venv local-rag
-```
-Activate the virtual environment:
-```bash
-./local-rag/Scripts/activate
-```
-Then install requirements:
-```bash
-pip install -r requirements.txt
-```
-
-## 3. Build and run the Qdrant & Query Microservice containers
+## 2. Build and run the Qdrant & Query Microservice containers
 
 ```bash
 docker compose up --build
@@ -63,7 +49,7 @@ To permanently remove a container run:
 docker rm -f <container id>
 ```
 
-## 4. Ingest your book
+## 3. Ingest your book
 
 In a separate terminal run the ingest command to index and embed the document in Qdrant.
 
