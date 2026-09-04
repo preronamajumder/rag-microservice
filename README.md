@@ -15,34 +15,37 @@
 
 ## 1. Install Ollama and pull models (on your host machine — not in Docker)
 
+Go to https://ollama.com/download and download ollama 
+
+Pull embdding and chat model:
+
 ```bash
-# https://ollama.com/download
 ollama pull nomic-embed-text   # embedding model
 ollama pull llama3.1           # chat model (swap for any model you have)
 ```
 
 Ollama needs to be running (check the tray icon / run `ollama --version`).
 
-## 2. Ingest your book (also on your host, before starting the API)
+## 2. Create a Python Virtual Environment
 
+Create a virtual environment within this workspace:
+```bash
+python -m venv local-rag
+```
+Activate the virtual environment:
+```bash
+./local-rag/Scripts/activate
+```
+Then install requirements:
 ```bash
 pip install -r requirements.txt
-python ingest.py path/to/book.pdf --collection book_rag --qdrant-url http://localhost:6333
 ```
 
-This step needs Qdrant reachable. Either start it standalone first:
-```bash
-docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
-```
-or bring up the full stack from step 3 and then run ingest.py against
-`http://localhost:6333` (the compose file publishes that port to your host).
-
-## 3. Build and run the microservice
+## 3. Build and run the Qdrant & Query Microservice containers
 
 ```bash
 docker compose up --build
 ```
-
 This starts two containers:
 - `qdrant` — the vector database, on `localhost:6333`
 - `rag-api` — the FastAPI query service, on `localhost:8000`
@@ -50,6 +53,25 @@ This starts two containers:
 The API container reaches Ollama on your host via `host.docker.internal`
 (already wired up in `docker-compose.yml`), so you don't need to
 containerize Ollama.
+
+To check which containers are running use:
+```bash
+docker ps -a
+```
+To permanently remove a container run:
+```bash
+docker rm -f <container id>
+```
+
+## 4. Ingest your book
+
+In a separate terminal run the ingest command to index and embed the document in Qdrant.
+
+Qdrant container needs to be up for this step. In a separate terminal create virtual environment:
+```bash
+python ingest.py path/to/book.pdf --collection book_rag --qdrant-url http://localhost:6333
+```
+if you delete the Qdrant container then you have to run this ingest command again
 
 ## 4. Call it from Postman
 
