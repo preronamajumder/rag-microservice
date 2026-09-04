@@ -1,0 +1,29 @@
+services:
+  qdrant:
+    image: qdrant/qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+
+  rag-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      # host.docker.internal lets the container reach Ollama running on
+      # your Windows/Mac host. Works out of the box with Docker Desktop.
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - EMBED_MODEL=nomic-embed-text
+      - LLM_MODEL=llama3.1
+      - DEFAULT_COLLECTION=book_rag
+      - DEFAULT_K=4
+    depends_on:
+      - qdrant
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  qdrant_storage:
