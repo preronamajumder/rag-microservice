@@ -26,8 +26,9 @@ ollama pull llama3.1           # chat model (swap for any model you have)
 
 Ollama needs to be running (check the tray icon / run `ollama --version`).
 
-
 ## 2. Build and run the Qdrant & Query Microservice containers
+
+In a separate terminal start the containers.
 
 ```bash
 docker compose up --build
@@ -49,9 +50,24 @@ To permanently remove a container run:
 docker rm -f <container id>
 ```
 
-## 3. Ingest your book
+## 3. Create a Python Virtual Environment
 
-In a separate terminal run the ingest command to index and embed the document in Qdrant.
+Create a virtual environment within this workspace:
+```bash
+python -m venv local-rag
+```
+Activate the virtual environment:
+```bash
+./local-rag/Scripts/activate
+```
+Then install requirements:
+```bash
+pip install -r requirements.txt
+```
+
+## 4. Ingest your book
+
+Run the ingest command to index and embed the document in Qdrant.
 
 Qdrant container needs to be up for this step. 
 ```bash
@@ -59,7 +75,7 @@ python ingest.py path/to/book.pdf --collection book_rag --qdrant-url http://loca
 ```
 if you delete the Qdrant container then you have to run this ingest command again
 
-## 4. Call it from Postman
+## 5. Call it from Postman
 
 - **Method:** POST
 - **URL:** `http://localhost:8000/query`
