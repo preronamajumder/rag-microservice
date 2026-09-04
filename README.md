@@ -67,7 +67,7 @@ docker rm -f <container id>
 
 In a separate terminal run the ingest command to index and embed the document in Qdrant.
 
-Qdrant container needs to be up for this step. In a separate terminal create virtual environment:
+Qdrant container needs to be up for this step. 
 ```bash
 python ingest.py path/to/book.pdf --collection book_rag --qdrant-url http://localhost:6333
 ```
