@@ -1,0 +1,1 @@
+identify vulnerabilities and report findings, but don't modify files or attempt fixes. create an .md file for report. 
