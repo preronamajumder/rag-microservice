@@ -32,9 +32,28 @@ jobs:
 
       - name: Run Copilot Security Review
         run: |
+          set -o pipefail
+
           copilot -p "/security-review" \
             --allow-tool='read,grep,glob,skill,shell(git diff:*)' \
             --deny-tool='write' \
-            --silent
+            --silent \
+            --no-ask-user \
+            | tee security-review-report.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Evaluate Security Review
+        run: |
+          if ! grep -q '^SECURITY_REVIEW_STATUS: PASS$' security-review-report.md \
+             && ! grep -q '^SECURITY_REVIEW_STATUS: FAIL$' security-review-report.md; then
+            echo "ERROR: Copilot did not produce a valid security decision."
+            exit 1
+          fi
+
+          if grep -q '^SECURITY_REVIEW_STATUS: FAIL$' security-review-report.md; then
+            echo "Security review FAILED."
+            exit 1
+          fi
+
+          echo "Security review PASSED."
