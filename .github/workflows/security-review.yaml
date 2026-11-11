@@ -8,52 +8,12 @@ on:
 
 permissions:
   contents: read
-  copilot-requests: write
 
 jobs:
   security-review:
     name: Copilot Security Review
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout PR code
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
+    uses: preronamajumder/ai-security-skills/.github/workflows/security-review.yml@main
 
-      - name: Install Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-
-      - name: Install Copilot CLI
-        run: npm install -g @github/copilot
-
-      - name: Run Copilot Security Review
-        run: |
-          set -o pipefail
-
-          copilot -p "/security-review" \
-            --allow-tool='read,grep,glob,skill,shell(git diff:*)' \
-            --deny-tool='write' \
-            --silent \
-            --no-ask-user \
-            | tee security-review-report.md
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Evaluate Security Review
-        run: |
-          if ! grep -q '^SECURITY_REVIEW_STATUS: PASS$' security-review-report.md \
-             && ! grep -q '^SECURITY_REVIEW_STATUS: FAIL$' security-review-report.md; then
-            echo "ERROR: Copilot did not produce a valid security decision."
-            exit 1
-          fi
-
-          if grep -q '^SECURITY_REVIEW_STATUS: FAIL$' security-review-report.md; then
-            echo "Security review FAILED."
-            exit 1
-          fi
-
-          echo "Security review PASSED."
+    secrets:
+      copilot_github_token: ${{ secrets.COPILOT_GITHUB_TOKEN }}
