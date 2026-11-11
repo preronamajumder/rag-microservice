@@ -1,0 +1,19 @@
+
+name: AI Security Review
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  security-review:
+    name: Copilot Security Review
+
+    uses: preronamajumder/ai-security-skills/.github/workflows/security-review.yml@main
+
+    secrets:
+      copilot_github_token: ${{ secrets.COPILOT_GITHUB_TOKEN }}

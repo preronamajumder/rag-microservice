@@ -1,1 +1,3 @@
 ./local-rag
+./evaluation
+./evaluation_pipeline

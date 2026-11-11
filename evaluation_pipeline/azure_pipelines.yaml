@@ -1,0 +1,32 @@
+trigger:
+  branches: { include: [main] }
+  paths: { include: [prompts/*, config/*, dataset.jsonl, '*.py', baseline.json] }
+pr:
+  branches: { include: [main] }
+  paths: { include: [prompts/*, config/*, dataset.jsonl, '*.py', baseline.json] }
+schedules:
+  - cron: "0 3 * * *"          # nightly drift check
+    displayName: Nightly eval
+    branches: { include: [main] }
+    always: true
+
+pool: { vmImage: ubuntu-latest }
+
+steps:
+  - task: UsePythonVersion@0
+    inputs: { versionSpec: '3.11' }
+  - script: pip install requests
+    displayName: Install deps
+  - script: python run_eval.py --threshold 0
+    displayName: Run eval suite
+    env:
+      LLM_BACKEND: openai
+      OPENAI_API_KEY: $(EVAL_API_KEY)          # secret variable: must be mapped explicitly via env
+      OPENAI_BASE_URL: $(EVAL_BASE_URL)
+      JUDGE_MODEL: $(JUDGE_MODEL)
+      AGENT_MODEL: $(AGENT_MODEL)
+  - script: python compare.py --floor 0.8 --max-drop 0.05
+    displayName: Regression gate
+  - task: PublishBuildArtifacts@1
+    condition: always()
+    inputs: { PathtoPublish: results, ArtifactName: eval-results }
