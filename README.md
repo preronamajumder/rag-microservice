@@ -1,5 +1,5 @@
 # PDF RAG with Ollama + Qdrant + LangChain
-
+This is a POC
 ## How it works
 
 - **ingest.py** — Run once (on your host, with Python) per PDF. Loads it
