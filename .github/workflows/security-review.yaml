@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  copilot-requests: write
 
 jobs:
   security-review:
@@ -29,11 +30,11 @@ jobs:
       - name: Install Copilot CLI
         run: npm install -g @github/copilot
 
-      - name: Run security review skill
-        env:
-          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+      - name: Run Copilot Security Review
         run: |
           copilot -p "/security-review" \
-          --allow-tool='read,grep,glob,skill,shell(git diff:*)' \
-          --deny-tool='write' \
-          --silent
+            --allow-tool='read,grep,glob,skill,shell(git diff:*)' \
+            --deny-tool='write' \
+            --silent
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
