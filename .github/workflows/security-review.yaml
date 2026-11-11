@@ -13,7 +13,7 @@ jobs:
   security-review:
     name: Copilot Security Review
 
-    uses: preronamajumder/ai-security-skills/.github/workflows/security-review.yml@main
+    uses: preronamajumder/security-review/.github/workflows/security-review.yml@main
 
     secrets:
       copilot_github_token: ${{ secrets.COPILOT_GITHUB_TOKEN }}
